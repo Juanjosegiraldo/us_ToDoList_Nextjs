@@ -1,65 +1,65 @@
 # Task Timer — To-Do List
 
-Aplicación de lista de tareas con cronómetro construida con **Next.js (App Router)**, **MongoDB/Mongoose** y **HeroUI**. Permite crear tareas, iniciarlas y finalizarlas registrando la fecha de inicio y fin, y eliminarlas. Toda la información se persiste en una base de datos MongoDB.
+A task list app with a timer built with **Next.js (App Router)**, **MongoDB/Mongoose**, and **HeroUI**. It lets you create tasks, start and finish them while recording their start and end dates, and delete them. All data is persisted in a MongoDB database.
 
-🔗 **Demo en vivo:** [https://us-to-do-list-nextjs.vercel.app/](https://us-to-do-list-nextjs.vercel.app/)
+🔗 **Live demo:** [https://us-to-do-list-nextjs.vercel.app/](https://us-to-do-list-nextjs.vercel.app/)
 
-## ¿Qué hace?
+## What it does
 
-- **Crear tareas:** escribe un título y agrégalo a la lista. Cada tarea nace en estado `pending`.
-- **Iniciar una tarea:** al iniciarla pasa a estado `inProgress` y se guarda la fecha de inicio (`startDate`).
-- **Finalizar una tarea:** al terminarla pasa a estado `done` y se guarda la fecha de fin (`endDate`), permitiendo conocer cuánto tomó.
-- **Eliminar tareas:** borra una tarea de la lista y de la base de datos.
+- **Create tasks:** type a title and add it to the list. Each task starts in the `pending` state.
+- **Start a task:** starting it moves it to the `inProgress` state and saves the start date (`startDate`).
+- **Finish a task:** completing it moves it to the `done` state and saves the end date (`endDate`), so you can tell how long it took.
+- **Delete tasks:** remove a task from the list and from the database.
 
-Los tres estados posibles de una tarea son: `pending`, `inProgress` y `done`.
+A task can be in one of three states: `pending`, `inProgress`, and `done`.
 
-## Tecnologías
+## Tech stack
 
 - [Next.js 16](https://nextjs.org) (App Router + Route Handlers)
 - [React 19](https://react.dev)
-- [MongoDB](https://www.mongodb.com) con [Mongoose](https://mongoosejs.com)
-- [HeroUI](https://www.heroui.com) y [Tailwind CSS 4](https://tailwindcss.com)
+- [MongoDB](https://www.mongodb.com) with [Mongoose](https://mongoosejs.com)
+- [HeroUI](https://www.heroui.com) and [Tailwind CSS 4](https://tailwindcss.com)
 - TypeScript
 
 ## API
 
-La lógica de datos se expone mediante Route Handlers:
+Data logic is exposed through Route Handlers:
 
-| Método | Ruta                  | Descripción                          |
+| Method | Route                 | Description                          |
 | ------ | --------------------- | ------------------------------------ |
-| GET    | `/api/todolist`       | Lista todas las tareas               |
-| POST   | `/api/todolist`       | Crea una nueva tarea                 |
-| PUT    | `/api/todolist/[id]`  | Actualiza una tarea (estado/fechas)  |
-| DELETE | `/api/todolist/[id]`  | Elimina una tarea                    |
+| GET    | `/api/todolist`       | List all tasks                       |
+| POST   | `/api/todolist`       | Create a new task                    |
+| PUT    | `/api/todolist/[id]`  | Update a task (state/dates)          |
+| DELETE | `/api/todolist/[id]`  | Delete a task                        |
 
-## Variables de entorno
+## Environment variables
 
-Crea un archivo `.env.local` con la cadena de conexión a tu base de datos MongoDB (por ejemplo, MongoDB Atlas):
+Create a `.env.local` file with the connection string for your MongoDB database (e.g., MongoDB Atlas):
 
 ```bash
-MONGODB_URI="tu-cadena-de-conexion"
+MONGODB_URI="your-connection-string"
 ```
 
-## Cómo ejecutar
+## Running locally
 
-Instala las dependencias y levanta el servidor de desarrollo:
+Install dependencies and start the development server:
 
 ```bash
 npm install
 npm run dev
 ```
 
-Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Scripts disponibles
+## Available scripts
 
 ```bash
-npm run dev     # servidor de desarrollo
-npm run build   # build de producción
-npm run start   # ejecuta el build de producción
-npm run lint    # análisis de código con ESLint
+npm run dev     # development server
+npm run build   # production build
+npm run start   # run the production build
+npm run lint    # lint the code with ESLint
 ```
 
-## Despliegue
+## Deployment
 
-La aplicación está desplegada en **Vercel**: [https://us-to-do-list-nextjs.vercel.app/](https://us-to-do-list-nextjs.vercel.app/)
+The app is deployed on **Vercel**: [https://us-to-do-list-nextjs.vercel.app/](https://us-to-do-list-nextjs.vercel.app/)
