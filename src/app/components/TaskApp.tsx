@@ -1,9 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { Button } from '@heroui/react'
 import { Card } from './Card'
-
-const STORAGE_KEY = 'task-timer-tasks'
 
 interface TodoListProps {
   id: string
@@ -13,54 +12,59 @@ interface TodoListProps {
   state: 'pending' | 'inProgress' | 'done'
 }
 
+// Convierte un documento de Mongo al shape que usa el componente
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mapTask = (doc: any): TodoListProps => ({
+  id: doc._id,
+  title: doc.title,
+  state: doc.state,
+  startDate: doc.startDate ? new Date(doc.startDate).getTime() : undefined,
+  endDate: doc.endDate ? new Date(doc.endDate).getTime() : undefined,
+})
+
 export default function TaskApp() {
   const [valor, setValor] = useState('')
   const [todoList, setTodoList] = useState<TodoListProps[]>([])
-  const [loaded, setLoaded] = useState(false)
 
-  // Cargar tareas guardadas al montar (solo en cliente)
+  // Cargar tareas desde la API (Mongo) al montar
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY)
-    if (saved) {
-      try {
-        setTodoList(JSON.parse(saved))
-      } catch {
-        // Si el JSON está corrupto, empezamos limpio
-      }
+    const fetchTasks = async () => {
+      const res = await fetch('/api/todolist')
+      const json = await res.json()
+      setTodoList(json.data.map(mapTask))
     }
-    setLoaded(true)
+    fetchTasks()
   }, [])
 
-  // Guardar en cada cambio (después de la carga inicial)
-  useEffect(() => {
-    if (!loaded) return
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(todoList))
-  }, [todoList, loaded])
-
-  const addTask = () => {
+  const addTask = async () => {
     if (valor.trim() === '') return
-    const newTask: TodoListProps = {
-      id: crypto.randomUUID(),
-      title: valor.trim(),
-      state: 'pending',
-    }
-    setTodoList([...todoList, newTask])
+    const res = await fetch('/api/todolist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title: valor.trim(), state: 'pending' }),
+    })
+    const json = await res.json()
+    setTodoList([...todoList, mapTask(json.data)])
     setValor('')
   }
 
-  const startTask = (id: string) => {
-    setTodoList(todoList.map((task) =>
-      task.id === id ? { ...task, state: 'inProgress', startDate: Date.now() } : task
-    ))
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const updateTask = async (id: string, cambios: any) => {
+    const res = await fetch(`/api/todolist/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(cambios),
+    })
+    const json = await res.json()
+    setTodoList(todoList.map((task) => (task.id === id ? mapTask(json.data) : task)))
   }
 
-  const endTask = (id: string) => {
-    setTodoList(todoList.map((task) =>
-      task.id === id ? { ...task, state: 'done', endDate: Date.now() } : task
-    ))
-  }
+  const startTask = (id: string) => updateTask(id, { state: 'inProgress', startDate: Date.now() })
 
-  const deleteTask = (id: string) => {
+  const endTask = (id: string) => updateTask(id, { state: 'done', endDate: Date.now() })
+
+  const deleteTask = async (id: string) => {
+    await fetch(`/api/todolist/${id}`, { method: 'DELETE' })
     setTodoList(todoList.filter((task) => task.id !== id))
   }
 
@@ -75,12 +79,9 @@ export default function TaskApp() {
           value={valor}
           placeholder="Nueva tarea..."
         />
-        <button
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-          onClick={addTask}
-        >
+        <Button variant="primary" onPress={addTask}>
           Agregar tarea
-        </button>
+        </Button>
       </div>
 
       <div className="flex flex-col items-center w-full max-w-sm">
